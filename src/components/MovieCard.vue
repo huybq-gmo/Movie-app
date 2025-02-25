@@ -1,7 +1,7 @@
 <template>
     <Card class="movie-card" @click="gotoMovieDetail">
         <template #header>
-            <img :alt="movie.name" :src="movie.thumb_url" class="movie-thumb" />
+            <img :alt="movie.name" :src="formateUrl(movie.thumb_url)" class="movie-thumb" />
         </template>
         <template #title>
             <span class="movie-title">{{ movie.name }}</span>
@@ -35,6 +35,12 @@ const props = defineProps<{
 
     };
 }>();
+const formateUrl = (url: string) => {
+    if (url.includes('https://phimimg.com/')) {
+        return url;
+    }
+    return `https://phimimg.com/${url}`;
+}
 
 const router = useRouter();
 

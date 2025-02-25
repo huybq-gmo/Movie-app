@@ -8,7 +8,13 @@
 
             <!-- Tuỳ chỉnh mục menu -->
             <template #item="{ item, props, hasSubmenu, root }">
-                <a v-ripple class="flex items-center px-4 py-2" v-bind="props.action" @click="navigate(item)">
+                <a v-ripple 
+                   class="flex items-center px-4 py-2" 
+                   v-bind="props.action" 
+                   @click="navigate(item)"
+                   :class="{ 'active-menu': isActiveRoute(item.path) }"
+                >
+                    <i :class="[item.icon, 'mr-2']" v-if="item.icon"></i>
                     <span>{{ item.label }}</span>
                     <i v-if="hasSubmenu"
                         :class="['pi pi-angle-down ml-2', { 'pi-angle-down': root, 'pi-angle-right': !root }]"></i>
@@ -57,18 +63,32 @@ const menuItems = ref([
         label: "Quốc Gia",
         icon: "pi pi-globe",
         items: [
-            { label: "Việt Nam", path: "/phim?country=viet-nam" },
-            { label: "Hàn Quốc", path: "/phim?country=han-quoc" },
-            { label: "Mỹ", path: "/phim?country=my" },
-            { label: "Nhật Bản", path: "/phim?country=nhat-ban" },
+            { label: "Việt Nam", path: "/quoc-gia/viet-nam" },
+            { label: "Hàn Quốc", path: "/quoc-gia/han-quoc" },
+            { label: "Mỹ", path: "/quoc-gia/my" },
+            { label: "Nhật Bản", path: "/quoc-gia/nhat-ban" },
         ]
     }
 ]);
 
-// Chuyển hướng đến trang danh sách phim theo loại
+// Thêm hàm kiểm tra route active
+const isActiveRoute = (path: string) => {
+    if (!path) return false;
+    // Kiểm tra chính xác path
+    if (path === '/') {
+        return router.currentRoute.value.path === '/';
+    }
+    return router.currentRoute.value.path === path || 
+           router.currentRoute.value.fullPath === path ||
+           router.currentRoute.value.path.startsWith(path);
+};
+
+// Cập nhật hàm navigate
 const navigate = (item: any) => {
     if (item.path) {
         router.push(item.path);
+        // Reset search query khi chuyển trang
+        searchQuery.value = "";
     }
 };
 
@@ -142,5 +162,24 @@ const gotoHome = () => {
 .search-box .p-button-text:hover {
     background-color: #ffcc00;
     color: black;
+}
+
+/* Thêm style cho menu active */
+:deep(.active-menu) {
+    background-color: #333 !important;
+    color: #ffcc00 !important;
+    font-weight: bold;
+}
+
+/* Thêm hiệu ứng hover cho icon */
+:deep(.p-menubar-item-link:hover) i {
+    color: #ffcc00;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+/* Style cho icon trong menu */
+:deep(.p-menubar-item-link) i {
+    transition: all 0.2s ease;
 }
 </style>

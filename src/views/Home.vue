@@ -16,6 +16,7 @@ interface Movie {
   genre?: string;
 }
 
+
 const movies = ref<Movie[]>([]);
 const totalMovies = ref(0);
 const title = ref("Phim Mới Cập Nhật");

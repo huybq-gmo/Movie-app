@@ -1,6 +1,7 @@
 import Home from "@/views/Home.vue";
 import MovieItem from "@/views/Movie-Item.vue";
 import MovieList from "@/views/MovieList.vue";
+import MoviePlay from "@/views/MoviePlay.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -17,7 +18,7 @@ const router = createRouter({
       component: MovieList,
     },
     {
-      path: "/type/:type",
+      path: "/type/:slug",
       name: "type",
       component: MovieList,
     },
@@ -26,6 +27,13 @@ const router = createRouter({
       name: "MovieItem",
       component: MovieItem,
     },
+    
+    {
+      path: "/movie/:slug/:episode",
+      name: "MoviePlay",
+      component: MoviePlay,
+    },
+    
   ],
 });
 

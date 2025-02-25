@@ -1,150 +1,121 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from "vue";
+import { ref, onMounted, watch,computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
-import Rating from "primevue/rating";
-import Tag from "primevue/tag";
 import Button from "primevue/button";
 import Carousel from "primevue/carousel";
 
 const route = useRoute();
+const router = useRouter();
+
 const movie = ref<any>(null);
 const newMovies = ref<any>(null);
 const relatedMovies = ref<any>(null);
 const episodes = ref<any>(null);
-const typeMovie = ref<any>('hanh-dong');
-const episode = ref<string>('tap-01');
-const slug = route.params.slug
+const typeMovie = ref<string>("");
+const selectedEpisode = ref<string>("");
 
 const fetchMovieDetail = async () => {
+    console.log("Fetching movie details...");
     try {
-        const response = await axios.get(`https://phimapi.com/phim/${slug}`);
-        movie.value = response.data;
-        typeMovie.value=movie.value.movie.category[0]?.slug;
-        episodes.value = movie.value.episodes[0]?.server_data;
-        console.log(episodes.value);
-
+        const { data } = await axios.get(`https://phimapi.com/phim/${route.params.slug}`);
+        movie.value = data;
+        console.log("Movie fetched:", data);
+        
+        if (data.movie.category.length > 0) {
+            typeMovie.value = data.movie.category[0].slug;
+        }
+        
+        episodes.value = data.episodes[0]?.server_data || [];
+        selectedEpisode.value = episodes.value.length ? episodes.value[0].link_embed : "";
     } catch (error) {
         console.error("Lỗi khi tải thông tin phim:", error);
     }
 };
 
-const fetchRelatedMovies = async (typeMovie:string) => {
+
+const fetchRelatedMovies = async () => {
+    if (!typeMovie.value) return;
     try {
-        const res = await axios.get(`https://phimapi.com/v1/api/the-loai/${typeMovie}`)
-        relatedMovies.value = res.data.data.items
-        // console.log(relatedMovies.value);
-
+        const { data } = await axios.get(`https://phimapi.com/v1/api/the-loai/${typeMovie.value}`);
+        relatedMovies.value = data.data.items;
+    } catch (error) {
+        console.error("Lỗi khi tải phim cùng loại:", error);
     }
-    catch (error) {
-        console.error("Lỗi khi tải thông tin phim:", error);
-    }
+};
 
-}
 const fetchNewMovies = async () => {
     try {
-        const res = await axios.get(`https://phimapi.com/danh-sach/phim-moi-cap-nhat`);
-        newMovies.value = res.data.items;
-        // console.log(newMovies.value);
-        
+        const { data } = await axios.get(`https://phimapi.com/danh-sach/phim-moi-cap-nhat`);
+        newMovies.value = data.items;
     } catch (error) {
         console.error("Lỗi khi tải danh sách phim mới:", error);
     }
 };
-watchEffect(()=>{
-    fetchMovieDetail();
-    fetchRelatedMovies(typeMovie.value);
-    fetchNewMovies();
-})
-onMounted(() => {
-    fetchMovieDetail();
-    fetchRelatedMovies(typeMovie.value);
+
+onMounted(async () => {
+    await fetchMovieDetail();
     fetchNewMovies();
 });
 
-const activeTab = ref('info');
-const router = useRouter();
-const gotoMovieDetail = (slug:string) => {
-  router.push(`/movie/${slug}`);
+watch(typeMovie, fetchRelatedMovies, { immediate: true });
+
+const activeTab = ref("info");
+
+const gotoMovieDetail = (slug: string) => {
+    router.push(`/movie/${slug}`);
 };
 
 const responsiveOptions = ref([
-    {
-        breakpoint: '1400px',
-        numVisible: 2,
-        numScroll: 1
-    },
-    {
-        breakpoint: '1199px',
-        numVisible: 3,
-        numScroll: 1
-    },
-    {
-        breakpoint: '767px',
-        numVisible: 2,
-        numScroll: 1
-    },
-    {
-        breakpoint: '575px',
-        numVisible: 1,
-        numScroll: 1
-    }
+    { breakpoint: "1400px", numVisible: 2, numScroll: 1 },
+    { breakpoint: "1199px", numVisible: 3, numScroll: 1 },
+    { breakpoint: "767px", numVisible: 2, numScroll: 1 },
+    { breakpoint: "575px", numVisible: 1, numScroll: 1 },
 ]);
-const gotoMoviePlay=(slug:string|string[],ep:string)=>{
-    episode.value = ep
-    if (typeof slug === 'string') {
-        router.push(`/movie/${slug}/${ep}`);
-    }
-}
+
+const episodeUrl = computed(() => {
+    if (!selectedEpisode.value) return '';
+    return selectedEpisode.value;
+});
+
+const isEpisodeActive = (episodeLink: string) => {
+    return selectedEpisode.value === episodeLink;
+};
 
 </script>
 
+
 <template>
     <div v-if="movie" class="container">
-        <!-- PHẦN CHÍNH CHIA HAI CỘT -->
         <div class="main-content">
-            <!-- CỘT BÊN TRÁI: THÔNG TIN PHIM -->
             <div class="movie-detail">
-                <div class="movie-header">
-                    <div class="movie-poster">
-                        <img :src="movie.movie.poster_url" :alt="movie.movie.name" />
-                    </div>
-                    <div class="movie-info">
-                        <h1>{{ movie.movie.name }}</h1>
-                        <h3>{{ movie.movie.origin_name }}</h3>
-                        <p class="year-country">
-                            {{ movie.movie.year }} • {{ movie.movie.country[0]?.name }} (Lượt xem {{ movie.movie.view
-                            }})
-                        </p>
+                <div class="video-container">
+                    <iframe 
+                        v-if="episodeUrl"
+                        :src="episodeUrl"
+                        class="video-player"
+                        frameborder="0"
+                        allowfullscreen
+                        :key="episodeUrl"
+                    ></iframe>
+                </div>
 
-                        <div class="rating">
-                            <Rating v-model="movie.movie.rating" readonly :cancel="false" />
-                            <span>({{ movie.movie.rating }} đánh giá)</span>
-                        </div>
 
-                        <div class="genres">
-                            <Tag v-for="genre in movie.movie.category" :key="genre.id" class="genre-tag">
-                                {{ genre.name }}
-                            </Tag>
-                        </div>
-
-                        <div class="buttons">
-                            <Button label="Xem ngay" @click="gotoMoviePlay(slug,'tap-01')"  icon="pi pi-play" class="watch-btn" />
-                            <Button label="Lưu yêu thích" icon="pi pi-heart" class="favorite-btn" />
-                        </div>
-                        <!-- <div v-if="movie.episodes?.length" class="episode-list">
-                            <h2>Chọn tập</h2>
-                            <div class="episodes">
-                                <Button v-for="(ep, index) in movie.episodes[0]?.server_data" :key="index"
-                                    class="episode-btn">
-                                    {{ index + 1 }}
-                                </Button>
-                            </div>
-                        </div> -->
+                <div v-if="movie.episodes?.length" class="episode-list">
+                    <h2>Chọn tập</h2>
+                    <div class="episodes">
+                        <Button 
+                            v-for="(ep, index) in movie.episodes[0]?.server_data" 
+                            :key="index" 
+                            class="episode-btn"
+                            :class="{ 'active-episode': isEpisodeActive(ep.link_embed) }"
+                            @click="selectedEpisode = ep.link_embed"
+                        >
+                            {{ index + 1 }}
+                        </Button>
                     </div>
                 </div>
 
-                <!-- TÓM TẮT -->
                 <div class="tabs-container">
                     <div class="tabs">
                         <Button :class="{ active: activeTab === 'info' }" @click="activeTab = 'info'">Thông tin</Button>
@@ -167,29 +138,30 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
 
                 <div class="new-movies">
                     <h2>Phim mới ra mắt</h2>
-                   <div class="carousel">
-                    <Carousel :value="newMovies" :numVisible="3" :numScroll="1" circular :autoplayInterval="3000" :responsive-options="responsiveOptions">
-                        <template #item="slotProps">
-                            <div class="new-movie-item" @click="gotoMovieDetail(slotProps.data.slug)">
-                                <img :src="slotProps.data.thumb_url" :alt="slotProps.data.name" class="new-movie-poster" />
-                                <div class="new-movie-info">
-                                    <h3>{{ slotProps.data.name }}</h3>
-                                    
+                    <div class="carousel">
+                        <Carousel :value="newMovies" :numVisible="3" :numScroll="1" circular :autoplayInterval="3000"
+                            :responsive-options="responsiveOptions">
+                            <template #item="slotProps">
+                                <div class="new-movie-item" @click="gotoMovieDetail(slotProps.data.slug)">
+                                    <img :src="slotProps.data.thumb_url" :alt="slotProps.data.name"
+                                        class="new-movie-poster" />
+                                    <div class="new-movie-info">
+                                        <h3>{{ slotProps.data.name }}</h3>
+                                    </div>
                                 </div>
-                            </div>
-                        </template>
-                    </Carousel>
-                   </div>
+                            </template>
+                        </Carousel>
+                    </div>
                 </div>
-
             </div>
 
-            <!-- CỘT BÊN PHẢI: DANH SÁCH PHIM XEM NHIỀU -->
             <div class="trending-movies">
                 <h2 class="trending-title">Phim cùng loại</h2>
                 <ul>
-                    <li v-for="movie in relatedMovies" :key="movie.id" class="trending-item" @click="gotoMovieDetail(movie.slug)">
-                        <img :src="`https://phimimg.com/${movie.thumb_url}`" :alt="movie.name" class="trending-poster" />
+                    <li v-for="movie in relatedMovies" :key="movie.id" class="trending-item"
+                        @click="gotoMovieDetail(movie.slug)">
+                        <img :src="`https://phimimg.com/${movie.thumb_url}`" :alt="movie.name"
+                            class="trending-poster" />
                         <div class="trending-info">
                             <h3>{{ movie.name }}</h3>
                             <p>{{ movie.year }} • {{ movie.episode_current }}</p>
@@ -202,10 +174,27 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
 </template>
 
 <style scoped>
+.video-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.video-player {
+    width: 100%;
+    height: 500px;
+    /* Thêm chiều cao */
+    border-radius: 10px;
+}
+
 .container {
     padding: 20px;
     color: white;
     background: #181818;
+}
+
+.episode-list {
+    margin-left: 20px
 }
 
 .main-content {
@@ -215,7 +204,7 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
 
 /* PHẦN BÊN TRÁI */
 .movie-detail {
-    flex: 2;
+    flex: 3;
 }
 
 .movie-header {
@@ -283,6 +272,11 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
     color: white;
 }
 
+.active-episode {
+    background: #ff9800 !important;
+    color: black;
+}
+
 /* PHẦN BÊN PHẢI */
 .trending-movies {
     flex: 1;
@@ -304,9 +298,10 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
     padding: 10px 0;
     border-bottom: 1px solid #333;
 }
-.trending-item img{
+
+.trending-item img {
     width: 80px;
-} 
+}
 
 .trending-item:last-child {
     border-bottom: none;
@@ -379,37 +374,45 @@ button {
 .actor-role {
     color: gray;
 }
+
 .new-movies {
     margin-top: 30px;
     background: #222;
     padding: 15px;
     border-radius: 10px;
 }
+
 .carousel {
     width: 800px;
     height: 400px;
 }
-.movie-item{
+
+.movie-item {
     width: 200px;
 }
+
 .movie-item:hover {
     transform: scale(1.05);
 }
+
 .new-movie-poster {
     width: 200px;
     height: 200px;
     border-radius: 10px;
     object-fit: cover;
-} 
+}
+
 .new-movie-info {
     margin-top: 10px;
     color: white;
 }
+
 .new-movie-info h3 {
     font-size: 16px;
     font-weight: bold;
     margin: 5px 0;
 }
+
 .new-movie-info p {
     font-size: 14px;
     color: gray;
