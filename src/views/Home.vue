@@ -16,6 +16,7 @@ interface Movie {
   poster_url: string;
   thumb_url: string;
   genre?: string;
+  episode_current?:string 
 }
 
 
@@ -136,7 +137,7 @@ const filteredMovies = computed(() => {
         <ul v-if="recentMovies.values" class="recent-movie">
           <li
             v-for="movie in recentMovies"
-            :key="movie.id"
+            :key="movie._id"
             class="trending-item"
             @click="gotoMovieItem(movie)"
           >
@@ -147,7 +148,7 @@ const filteredMovies = computed(() => {
             />
             <div class="trending-info">
               <h3>{{ movie.name }}</h3>
-              <p>{{ movie.year }} • {{ movie.episode_current }}</p>
+              <p>{{ movie.year }}</p>
             </div>
           </li>
         </ul>

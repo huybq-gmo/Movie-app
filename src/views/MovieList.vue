@@ -16,6 +16,7 @@ interface Movie {
   poster_url: string;
   thumb_url: string;
   genre?: string;
+  episode_current?:string
 }
 
 const movies = ref<Movie[]>([]);
@@ -201,7 +202,7 @@ const title = computed(() => {
         <ul v-if="recentMovies.values" class="recent-movie">
           <li
             v-for="movie in recentMovies"
-            :key="movie.id"
+            :key="movie._id"
             class="trending-item"
             @click="gotoMovieItem(movie)"
           >

@@ -109,7 +109,6 @@ const gotoMovieDetail = () => {
     font-size: 0.875rem;
     color: #666;
     white-space: nowrap;
-    overflow: ;
     text-overflow: ellipsis;
 }
 </style>
