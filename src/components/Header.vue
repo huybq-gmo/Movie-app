@@ -8,12 +8,8 @@
 
             <!-- Tuỳ chỉnh mục menu -->
             <template #item="{ item, props, hasSubmenu, root }">
-                <a v-ripple 
-                   class="flex items-center px-4 py-2" 
-                   v-bind="props.action" 
-                   @click="navigate(item)"
-                   :class="{ 'active-menu': isActiveRoute(item.path) }"
-                >
+                <a v-ripple class="flex items-center px-4 py-2" v-bind="props.action" @click="navigate(item)"
+                    :class="{ 'active-menu': isActiveRoute(item.path) }">
                     <i :class="[item.icon, 'mr-2']" v-if="item.icon"></i>
                     <span>{{ item.label }}</span>
                     <i v-if="hasSubmenu"
@@ -30,33 +26,38 @@
                 </div>
             </template>
         </Menubar>
+        <!-- <p style="color: aliceblue;">{{ searchQuery }}</p> -->
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import Menubar from 'primevue/menubar';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
+import { useSearchStore } from "@/store/searchStore";
 
 const router = useRouter();
 const searchQuery = ref("");
 
+
 // Danh sách menu
 const menuItems = ref([
     { label: "Phim Mới", icon: "pi pi-star", path: "/" },
-    { label: "Phim Lẻ", icon: "pi pi-film", path: "/type/phim-le" },
-    { label: "Phim Bộ", icon: "pi pi-video", path: "/type/phim-bo" },
+    { label: "Phim Lẻ", icon: "pi pi-camera", path: "/loai-phim/phim-le" },
+    { label: "Phim Bộ", icon: "pi pi-video", path: "/loai-phim/phim-bo" },
+    { label: "Hoạt Hình", icon: "pi pi-moon", path: "/loai-phim/hoat-hinh" },
     {
         label: "Thể Loại",
         icon: "pi pi-th-large",
         items: [
-            { label: "Hành Động", path: "/category/hanh-dong" },
-            { label: "Hài Hước", path: "/category/hai-huoc" },
-            { label: "Kinh Dị", path: "/category/kinh-di" },
-            { label: "Tình Cảm", path: "/category/tinh-cam" },
+            { label: "Hành Động", path: "/the-loai/hanh-dong" },
+            { label: "Hài Hước", path: "/the-loai/hai-huoc" },
+            { label: "Kinh Dị", path: "/the-loai/kinh-di" },
+            { label: "Tình Cảm", path: "/the-loai/tinh-cam" },
+            { label: "Viễn Tưởng", path: "/the-loai/vien-tuong" },
         ]
     },
     {
@@ -65,12 +66,23 @@ const menuItems = ref([
         items: [
             { label: "Việt Nam", path: "/quoc-gia/viet-nam" },
             { label: "Hàn Quốc", path: "/quoc-gia/han-quoc" },
-            { label: "Mỹ", path: "/quoc-gia/my" },
+            { label: "Mỹ", path: "/quoc-gia/au-my" },
             { label: "Nhật Bản", path: "/quoc-gia/nhat-ban" },
         ]
     }
 ]);
+// search 
+const searchStore = useSearchStore();
+const searchMovie  = () => {
+    if (searchQuery.value.trim()) {
+        searchStore.setSearchQuery(searchQuery.value.trim());
+       
+    }
+};
+watch(searchQuery, (newQuery) => {
+  searchStore.setSearchQuery(newQuery.trim());
 
+});
 // Thêm hàm kiểm tra route active
 const isActiveRoute = (path: string) => {
     if (!path) return false;
@@ -78,9 +90,9 @@ const isActiveRoute = (path: string) => {
     if (path === '/') {
         return router.currentRoute.value.path === '/';
     }
-    return router.currentRoute.value.path === path || 
-           router.currentRoute.value.fullPath === path ||
-           router.currentRoute.value.path.startsWith(path);
+    return router.currentRoute.value.path === path ||
+        router.currentRoute.value.fullPath === path ||
+        router.currentRoute.value.path.startsWith(path);
 };
 
 // Cập nhật hàm navigate
@@ -92,17 +104,13 @@ const navigate = (item: any) => {
     }
 };
 
-// Tìm kiếm phim
-const searchMovie = () => {
-    if (searchQuery.value.trim()) {
-        router.push({ path: "/phim", query: { search: searchQuery.value } });
-    }
-};
+
 
 // Về trang chủ
 const gotoHome = () => {
     router.push("/");
 };
+
 </script>
 
 <style scoped>
@@ -130,18 +138,11 @@ const gotoHome = () => {
 }
 
 /* Khi mục menu active */
-:deep(.p-menuitem-active) > .p-menubar-item-link {
+:deep(.p-menuitem-active)>.p-menubar-item-link {
     background-color: #333 !important;
     color: #ffcc00 !important;
 }
 
-/* Reset trạng thái active khi chuột rời khỏi */
-:global(.p-focus) {
-    background-color: black;
-    color: floralwhite;
-    box-shadow: unset;
-    outline: none;
-}
 
 /* Thanh tìm kiếm */
 .search-box {
@@ -181,5 +182,17 @@ const gotoHome = () => {
 /* Style cho icon trong menu */
 :deep(.p-menubar-item-link) i {
     transition: all 0.2s ease;
+}
+
+:deep(.p-menubar-submenu) {
+    background-color: black;
+}
+
+:deep(.p-menubar-item-active > .p-menubar-item-content) {
+    background: #333;
+}
+
+:deep(.p-menubar-item-active) {
+    background: #333;
 }
 </style>

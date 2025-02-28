@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Button from "primevue/button";
 import Carousel from "primevue/carousel";
+import { formateUrl } from "@/utils/utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -44,18 +45,9 @@ const fetchRelatedMovies = async () => {
     }
 };
 
-const fetchNewMovies = async () => {
-    try {
-        const { data } = await axios.get(`https://phimapi.com/danh-sach/phim-moi-cap-nhat`);
-        newMovies.value = data.items;
-    } catch (error) {
-        console.error("Lỗi khi tải danh sách phim mới:", error);
-    }
-};
 
 onMounted(async () => {
     await fetchMovieDetail();
-    fetchNewMovies();
 });
 
 watch(typeMovie, fetchRelatedMovies, { immediate: true });
@@ -160,7 +152,7 @@ const isEpisodeActive = (episodeLink: string) => {
                 <ul>
                     <li v-for="movie in relatedMovies" :key="movie.id" class="trending-item"
                         @click="gotoMovieDetail(movie.slug)">
-                        <img :src="`https://phimimg.com/${movie.thumb_url}`" :alt="movie.name"
+                        <img :src="formateUrl(movie.thumb_url)" :alt="movie.name"
                             class="trending-poster" />
                         <div class="trending-info">
                             <h3>{{ movie.name }}</h3>

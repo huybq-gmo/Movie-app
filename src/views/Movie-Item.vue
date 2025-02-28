@@ -6,6 +6,7 @@ import Rating from "primevue/rating";
 import Tag from "primevue/tag";
 import Button from "primevue/button";
 import Carousel from "primevue/carousel";
+import { formateUrl } from "@/utils/utils";
 
 const route = useRoute();
 const movie = ref<any>(null);
@@ -41,25 +42,13 @@ const fetchRelatedMovies = async (typeMovie:string) => {
     }
 
 }
-const fetchNewMovies = async () => {
-    try {
-        const res = await axios.get(`https://phimapi.com/danh-sach/phim-moi-cap-nhat`);
-        newMovies.value = res.data.items;
-        // console.log(newMovies.value);
-        
-    } catch (error) {
-        console.error("Lỗi khi tải danh sách phim mới:", error);
-    }
-};
 watchEffect(()=>{
     fetchMovieDetail();
     fetchRelatedMovies(typeMovie.value);
-    fetchNewMovies();
 })
 onMounted(() => {
     fetchMovieDetail();
     fetchRelatedMovies(typeMovie.value);
-    fetchNewMovies();
 });
 
 const activeTab = ref('info');
@@ -189,7 +178,7 @@ const gotoMoviePlay=(slug:string|string[],ep:string)=>{
                 <h2 class="trending-title">Phim cùng loại</h2>
                 <ul>
                     <li v-for="movie in relatedMovies" :key="movie.id" class="trending-item" @click="gotoMovieDetail(movie.slug)">
-                        <img :src="`https://phimimg.com/${movie.thumb_url}`" :alt="movie.name" class="trending-poster" />
+                        <img :src="formateUrl(movie.thumb_url)" :alt="movie.name" class="trending-poster" />
                         <div class="trending-info">
                             <h3>{{ movie.name }}</h3>
                             <p>{{ movie.year }} • {{ movie.episode_current }}</p>

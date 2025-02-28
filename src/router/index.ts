@@ -12,14 +12,19 @@ const router = createRouter({
       name: "home",
       component: Home,
     },
+    // {
+    //   path: "/category/:category",
+    //   name: "category",
+    //   component: MovieList,
+    // },
+    // {
+    //   path: "/type/:slug",
+    //   name: "type",
+    //   component: MovieList,
+    // },
     {
-      path: "/category/:category",
-      name: "category",
-      component: MovieList,
-    },
-    {
-      path: "/type/:slug",
-      name: "type",
+      path: "/:filterType(the-loai|loai-phim|quoc-gia)/:slug",
+      name: "filtered-movies",
       component: MovieList,
     },
     {

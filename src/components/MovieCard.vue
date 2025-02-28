@@ -22,6 +22,8 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
 import { useRouter } from "vue-router";
+import { formateUrl } from "@/utils/utils";
+
 const props = defineProps<{
     movie: {
         _id: string;
@@ -35,12 +37,7 @@ const props = defineProps<{
 
     };
 }>();
-const formateUrl = (url: string) => {
-    if (url.includes('https://phimimg.com/')) {
-        return url;
-    }
-    return `https://phimimg.com/${url}`;
-}
+
 
 const router = useRouter();
 
