@@ -111,4 +111,27 @@ const gotoMovieDetail = () => {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+@media (max-width: 768px) {
+  .movie-card {
+    width: 8rem; /* Giảm kích thước card */
+    height: 16rem; /* Giảm chiều cao */
+  }
+
+  .movie-thumb {
+    height: 140px; /* Giảm chiều cao ảnh */
+  }
+
+  .movie-title {
+    font-size: 0.85rem; /* Nhỏ hơn */
+  }
+
+  .movie-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .movie-genre {
+    font-size: 0.75rem;
+  }
+}
+
 </style>

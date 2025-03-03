@@ -264,6 +264,7 @@ const filteredMovies = computed(() => {
   .trending-info p {
     font-size: 10px;
   }
+  
 }
 
 :deep(.p-paginator-default){
