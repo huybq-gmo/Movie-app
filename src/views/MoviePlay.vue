@@ -44,13 +44,28 @@ const fetchRelatedMovies = async () => {
         console.error("Lỗi khi tải phim cùng loại:", error);
     }
 };
-
+const fetchNewMovies = async () => {
+  try {
+    const res = await axios.get(
+      `https://phimapi.com/danh-sach/phim-moi-cap-nhat`
+    );
+    newMovies.value = res.data.items;
+    console.log(newMovies.value);
+    // console.log(newMovies.value);
+  } catch (error) {
+    console.error("Lỗi khi tải danh sách phim mới:", error);
+  }
+};
 
 onMounted(async () => {
     await fetchMovieDetail();
+    await fetchNewMovies();
 });
 
-watch(typeMovie, fetchRelatedMovies, { immediate: true });
+watch(typeMovie, () => {
+    fetchRelatedMovies();
+    fetchNewMovies();
+}, { immediate: true });
 
 const activeTab = ref("info");
 
@@ -409,4 +424,120 @@ button {
     font-size: 14px;
     color: gray;
 }
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .video-player {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .video-player {
+        height: 300px;
+    }
+
+    .trending-movies {
+        padding: 10px;
+    }
+
+    .trending-item {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .trending-item img {
+        width: 60px;
+        height: 80px;
+    }
+
+    .trending-info h3 {
+        font-size: 14px;
+    }
+
+    .trending-info p {
+        font-size: 12px;
+    }
+
+    .episodes {
+        justify-content: center;
+    }
+
+    .episode-btn {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .video-player {
+        height: 250px;
+    }
+
+    .episode-list h2 {
+        font-size: 16px;
+    }
+
+    .episodes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .episode-btn {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .trending-movies {
+        padding: 5px;
+    }
+
+    .trending-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .trending-item img {
+        width: 80px;
+        height: auto;
+    }
+
+    .trending-info h3 {
+        font-size: 14px;
+    }
+
+    .trending-info p {
+        font-size: 12px;
+    }
+
+    .new-movies {
+        padding: 10px;
+    }
+
+    .new-movie-poster {
+        width: 150px;
+        height: 150px;
+    }
+
+    .carousel {
+        width: 100%;
+        height: auto;
+    }
+}
+
 </style>

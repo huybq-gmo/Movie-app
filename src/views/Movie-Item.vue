@@ -457,4 +457,127 @@ button {
   font-size: 14px;
   color: gray;
 }
+@media (max-width: 1024px) {
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .movie-detail {
+    flex: 1;
+  }
+
+  .trending-movies {
+    flex: 1;
+    background: #222;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  /* Làm cho danh sách phim xem nhiều linh hoạt hơn */
+  .trending-item {
+    flex-direction: row;
+  }
+
+  .trending-item img {
+    width: 60px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  /* Sửa lại bố cục cột khi màn hình nhỏ hơn */
+  .main-content {
+    display: block;
+  }
+
+  .movie-detail {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .movie-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .movie-poster img {
+    width: 200px;
+    height: auto;
+  }
+
+  .movie-info {
+    text-align: center;
+    padding: 10px;
+  }
+
+  .rating {
+    margin-top: 10px;
+  }
+
+  .buttons {
+    margin-top: 15px;
+  }
+
+  .watch-btn {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .favorite-btn {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  /* Điều chỉnh độ rộng carousel cho thiết bị nhỏ */
+  .carousel {
+    width: 100%;
+    height: 300px;
+  }
+
+  .new-movie-poster {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+}
+
+/* Dành cho thiết bị di động nhỏ hơn (phone) */
+@media (max-width: 480px) {
+  .movie-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .movie-info h3 {
+    font-size: 1rem;
+  }
+
+  .year-country {
+    font-size: 0.875rem;
+  }
+
+  .tabs-container {
+    padding: 10px;
+  }
+
+  .tabs button {
+    padding: 10px;
+    font-size: 0.875rem;
+  }
+
+  .new-movie-info h3 {
+    font-size: 14px;
+  }
+
+  .new-movie-info p {
+    font-size: 12px;
+  }
+}
 </style>

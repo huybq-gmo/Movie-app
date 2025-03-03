@@ -148,7 +148,7 @@ const filteredMovies = computed(() => {
             />
             <div class="trending-info">
               <h3>{{ movie.name }}</h3>
-              <p>{{ movie.year }}</p>
+              <p>{{ movie.year }} • {{ movie.episode_current }}</p>
             </div>
           </li>
         </ul>
@@ -233,10 +233,39 @@ const filteredMovies = computed(() => {
 /* Đáp ứng trên màn hình nhỏ */
 @media (max-width: 768px) {
   .movie-container {
-    grid-template-columns: 1fr;
-    /* Xếp cột dọc trên màn hình nhỏ */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .right-column {
+    order: -1; /* Đưa danh sách phim đã xem lên trên */
+    background: #1e1e1e;
+    padding: 0.5rem;
+  }
+
+  .list-movies {
+    justify-content: center;
+  }
+
+  .trending-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .trending-item img {
+    width: 100px;
+    height: auto;
+  }
+
+  .trending-info h3 {
+    font-size: 14px;
+  }
+
+  .trending-info p {
+    font-size: 10px;
   }
 }
+
 :deep(.p-paginator-default){
   background-color: black;
 }

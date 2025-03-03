@@ -296,4 +296,53 @@ const title = computed(() => {
 :deep(.p-paginator-default) {
   background-color: black;
 }
+@media (max-width: 1024px) {
+  .movie-container {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-container {
+    grid-template-columns: 1fr;
+  }
+
+  .right-column {
+    order: -1;
+  }
+
+  .trending-item img {
+    width: 60px;
+  }
+
+  .trending-info h3 {
+    font-size: 14px;
+  }
+
+  .trending-info p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-movies {
+    justify-content: center;
+  }
+
+  .trending-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .trending-item img {
+    width: 100%;
+    height: auto;
+  }
+}
+
 </style>
